@@ -216,6 +216,27 @@ class OrderedDict(dict):
             first.prev = soft_link
             root.next = link
 
+    def _insert_between(self, prev_link, next_link, key, value):
+        self.__map[key] = link = prev_link.next = next_link.prev = _Link()
+        link.prev, link.next, link.key = prev_link, next_link, key
+        dict.__setitem__(self, key, value)
+
+    def insert_before(self, ref_key, key, value):
+        next_link = self.__map[ref_key]
+        self._insert_between(next_link.prev, next_link, key, value)
+
+    def insert_after(self, ref_key, key, value):
+        prev_link = self.__map[ref_key]
+        self._insert_between(prev_link, prev_link.next, key, value)
+
+    def swap(self, key1, key2):
+        link1, link2 = map(self.__map.__getitem__, (key1, key2))
+        prev1, next1, prev2, next2 = link1.prev, link1.next, link2.prev, link2.next
+        (link1.prev, link1.next, prev1.next, next1.prev,
+         link2.prev, link2.next, prev2.next, prev2.prev) = (
+            prev2, next2, link2, link2, prev1, next1, link1, link1
+        )
+
     def __sizeof__(self):
         sizeof = _sys.getsizeof
         n = len(self) + 1                       # number of links including root
