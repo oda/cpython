@@ -1331,6 +1331,198 @@ OrderedDict_move_to_end_impl(PyODictObject *self, PyObject *key, int last)
     Py_RETURN_NONE;
 }
 
+static int
+_PyODict_SetItem_KnownHash(PyObject *od, PyObject *key, PyObject *value,
+                           Py_hash_t hash);
+
+int _insert_between(PyODictObject *self, _ODictNode *prev_node, _ODictNode *next_node, PyObject *key, PyObject *value)
+{
+    Py_ssize_t i;
+    _ODictNode *inserted_node;
+    Py_hash_t hash = PyObject_Hash(key);
+    if (hash == -1)
+        return -1;
+    // For simplicity first, insert at the end and move.
+    if (_PyODict_SetItem_KnownHash((PyObject *)self, key, value, hash) < 0) {
+        return -1;
+    }
+    i = _odict_get_index(self, key, hash);
+    inserted_node = self->od_fast_nodes[i];
+    // Move this node between prev_node and next_node.
+    if (inserted_node == prev_node || inserted_node == next_node) {
+        return 0;
+    }
+    _odict_remove_node(self, inserted_node);
+
+    if (prev_node == NULL) {
+        _odictnode_PREV(inserted_node) = NULL;
+        _odictnode_NEXT(inserted_node) = _odict_FIRST(self);
+        _odict_FIRST(self) = inserted_node;
+    } else {
+        _odictnode_PREV(inserted_node) = prev_node;
+        _odictnode_NEXT(inserted_node) = _odictnode_NEXT(prev_node);
+        _odictnode_NEXT(prev_node) = inserted_node;
+    }
+
+    if (next_node == NULL) {
+        _odictnode_NEXT(inserted_node) = NULL;
+        _odictnode_PREV(inserted_node) = _odict_LAST(self);
+        _odict_LAST(self) = inserted_node;
+    } else {
+        _odictnode_NEXT(inserted_node) = next_node;
+        _odictnode_PREV(inserted_node) = _odictnode_PREV(next_node);
+        _odictnode_PREV(next_node) = inserted_node;
+    }
+    self->od_state++;
+    return 0;
+}
+
+
+/* insert_before() */
+
+/*[clinic input]
+OrderedDict.insert_before
+
+    sub_key: object
+    key: object
+    value: object
+
+Insert a key before the sub_key.
+[clinic start generated code]*/
+
+static PyObject *
+OrderedDict_insert_before_impl(PyODictObject *self, PyObject *sub_key,
+                               PyObject *key, PyObject *value)
+/*[clinic end generated code: output=8d7fa0e9e96973fe input=263e47601167ee2a]*/
+{
+    _ODictNode *node;
+    if (_odict_EMPTY(self)) {
+        PyErr_SetObject(PyExc_KeyError, key);
+        return NULL;
+    }
+    node = _odict_find_node(self, sub_key);
+    if (node == NULL) {
+        if (!PyErr_Occurred())
+            PyErr_SetObject(PyExc_KeyError, sub_key);
+        return NULL;
+    }
+    if (_insert_between(self, node->prev, node, key, value) < 0) {
+        return NULL;
+    }
+    return value;
+}
+
+
+/* insert_after() */
+
+/*[clinic input]
+OrderedDict.insert_after
+
+    sub_key: object
+    key: object
+    value: object
+
+Insert a key after the sub_key.
+[clinic start generated code]*/
+
+static PyObject *
+OrderedDict_insert_after_impl(PyODictObject *self, PyObject *sub_key,
+                              PyObject *key, PyObject *value)
+/*[clinic end generated code: output=a50b8b272adc5745 input=fcf504fdc8bf61d0]*/
+{
+    _ODictNode *node;
+    if (_odict_EMPTY(self)) {
+        PyErr_SetObject(PyExc_KeyError, key);
+        return NULL;
+    }
+    node = _odict_find_node(self, sub_key);
+    if (node == NULL) {
+        if (!PyErr_Occurred())
+            PyErr_SetObject(PyExc_KeyError, sub_key);
+        return NULL;
+    }
+    if (_insert_between(self, node, node->next, key, value) < 0) {
+        return NULL;
+    }
+    return value;
+}
+
+
+/* swap() */
+
+/*[clinic input]
+OrderedDict.swap
+
+    sub_key: object
+    key: object
+
+Swap two keys.
+[clinic start generated code]*/
+
+static PyObject *
+OrderedDict_swap_impl(PyODictObject *self, PyObject *sub_key, PyObject *key)
+/*[clinic end generated code: output=61f86e28f25c3d7d input=102cba0c11a60941]*/
+{
+    _ODictNode *node1;
+    _ODictNode *node2;
+    _ODictNode *prev1;
+    _ODictNode *prev2;
+    _ODictNode *next1;
+    _ODictNode *next2;
+    if (_odict_EMPTY(self)) {
+        PyErr_SetObject(PyExc_KeyError, key);
+        return NULL;
+    }
+    node1 = _odict_find_node(self, sub_key);
+    if (node1 == NULL) {
+        if (!PyErr_Occurred())
+            PyErr_SetObject(PyExc_KeyError, sub_key);
+        return NULL;
+    }
+    node2 = _odict_find_node(self, key);
+    if (node2 == NULL) {
+        if (!PyErr_Occurred())
+            PyErr_SetObject(PyExc_KeyError, key);
+        return NULL;
+    }
+    if (node1 == node2) {
+        if (!PyErr_Occurred())
+            PyErr_SetObject(PyExc_KeyError, key);
+        return NULL;
+    }
+    if (_odict_FIRST(self) == node1) {
+        _odict_FIRST(self) = node2;
+    } else if (_odict_FIRST(self) == node2) {
+        _odict_FIRST(self) = node1;
+    }
+    if (_odict_LAST(self) == node1) {
+        _odict_LAST(self) = node2;
+    } else if (_odict_LAST(self) == node2) {
+        _odict_LAST(self) = node1;
+    }
+    prev1 = _odictnode_PREV(node1);
+    prev2 = _odictnode_PREV(node2);
+    next1 = _odictnode_NEXT(node1);
+    next2 = _odictnode_NEXT(node2);
+    if (prev1 != NULL) {
+        _odictnode_NEXT(prev1) = node2;
+    }
+    if (next1 != NULL) {
+        _odictnode_PREV(next1) = node2;
+    }
+    if (prev2 != NULL) {
+        _odictnode_NEXT(prev2) = node1;
+    }
+    if (next2 != NULL) {
+        _odictnode_PREV(next2) = node1;
+    }
+    _odictnode_PREV(node1) = prev2;
+    _odictnode_NEXT(node1) = next2;
+    _odictnode_PREV(node2) = prev1;
+    _odictnode_NEXT(node2) = next1;
+    self->od_state++;
+    Py_RETURN_NONE;
+}
 
 /* tp_methods */
 
@@ -1362,6 +1554,9 @@ static PyMethodDef odict_methods[] = {
     {"__reversed__",    odict_reversed,    METH_NOARGS,
      odict_reversed__doc__},
     ORDEREDDICT_MOVE_TO_END_METHODDEF
+    ORDEREDDICT_INSERT_BEFORE_METHODDEF
+    ORDEREDDICT_INSERT_AFTER_METHODDEF
+    ORDEREDDICT_SWAP_METHODDEF
 
     {NULL,              NULL}   /* sentinel */
 };

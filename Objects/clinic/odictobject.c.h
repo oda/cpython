@@ -347,4 +347,190 @@ skip_optional_pos:
 exit:
     return return_value;
 }
-/*[clinic end generated code: output=7d8206823bb1f419 input=a9049054013a1b77]*/
+
+PyDoc_STRVAR(OrderedDict_insert_before__doc__,
+"insert_before($self, /, sub_key, key, value)\n"
+"--\n"
+"\n"
+"Insert a key before the sub_key.");
+
+#define ORDEREDDICT_INSERT_BEFORE_METHODDEF    \
+    {"insert_before", _PyCFunction_CAST(OrderedDict_insert_before), METH_FASTCALL|METH_KEYWORDS, OrderedDict_insert_before__doc__},
+
+static PyObject *
+OrderedDict_insert_before_impl(PyODictObject *self, PyObject *sub_key,
+                               PyObject *key, PyObject *value);
+
+static PyObject *
+OrderedDict_insert_before(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
+{
+    PyObject *return_value = NULL;
+    #if defined(Py_BUILD_CORE) && !defined(Py_BUILD_CORE_MODULE)
+
+    #define NUM_KEYWORDS 3
+    static struct {
+        PyGC_Head _this_is_not_used;
+        PyObject_VAR_HEAD
+        Py_hash_t ob_hash;
+        PyObject *ob_item[NUM_KEYWORDS];
+    } _kwtuple = {
+        .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
+        .ob_hash = -1,
+        .ob_item = { &_Py_ID(sub_key), &_Py_ID(key), &_Py_ID(value), },
+    };
+    #undef NUM_KEYWORDS
+    #define KWTUPLE (&_kwtuple.ob_base.ob_base)
+
+    #else  // !Py_BUILD_CORE
+    #  define KWTUPLE NULL
+    #endif  // !Py_BUILD_CORE
+
+    static const char * const _keywords[] = {"sub_key", "key", "value", NULL};
+    static _PyArg_Parser _parser = {
+        .keywords = _keywords,
+        .fname = "insert_before",
+        .kwtuple = KWTUPLE,
+    };
+    #undef KWTUPLE
+    PyObject *argsbuf[3];
+    PyObject *sub_key;
+    PyObject *key;
+    PyObject *value;
+
+    args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser,
+            /*minpos*/ 3, /*maxpos*/ 3, /*minkw*/ 0, /*varpos*/ 0, argsbuf);
+    if (!args) {
+        goto exit;
+    }
+    sub_key = args[0];
+    key = args[1];
+    value = args[2];
+    return_value = OrderedDict_insert_before_impl((PyODictObject *)self, sub_key, key, value);
+
+exit:
+    return return_value;
+}
+
+PyDoc_STRVAR(OrderedDict_insert_after__doc__,
+"insert_after($self, /, sub_key, key, value)\n"
+"--\n"
+"\n"
+"Insert a key after the sub_key.");
+
+#define ORDEREDDICT_INSERT_AFTER_METHODDEF    \
+    {"insert_after", _PyCFunction_CAST(OrderedDict_insert_after), METH_FASTCALL|METH_KEYWORDS, OrderedDict_insert_after__doc__},
+
+static PyObject *
+OrderedDict_insert_after_impl(PyODictObject *self, PyObject *sub_key,
+                              PyObject *key, PyObject *value);
+
+static PyObject *
+OrderedDict_insert_after(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
+{
+    PyObject *return_value = NULL;
+    #if defined(Py_BUILD_CORE) && !defined(Py_BUILD_CORE_MODULE)
+
+    #define NUM_KEYWORDS 3
+    static struct {
+        PyGC_Head _this_is_not_used;
+        PyObject_VAR_HEAD
+        Py_hash_t ob_hash;
+        PyObject *ob_item[NUM_KEYWORDS];
+    } _kwtuple = {
+        .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
+        .ob_hash = -1,
+        .ob_item = { &_Py_ID(sub_key), &_Py_ID(key), &_Py_ID(value), },
+    };
+    #undef NUM_KEYWORDS
+    #define KWTUPLE (&_kwtuple.ob_base.ob_base)
+
+    #else  // !Py_BUILD_CORE
+    #  define KWTUPLE NULL
+    #endif  // !Py_BUILD_CORE
+
+    static const char * const _keywords[] = {"sub_key", "key", "value", NULL};
+    static _PyArg_Parser _parser = {
+        .keywords = _keywords,
+        .fname = "insert_after",
+        .kwtuple = KWTUPLE,
+    };
+    #undef KWTUPLE
+    PyObject *argsbuf[3];
+    PyObject *sub_key;
+    PyObject *key;
+    PyObject *value;
+
+    args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser,
+            /*minpos*/ 3, /*maxpos*/ 3, /*minkw*/ 0, /*varpos*/ 0, argsbuf);
+    if (!args) {
+        goto exit;
+    }
+    sub_key = args[0];
+    key = args[1];
+    value = args[2];
+    return_value = OrderedDict_insert_after_impl((PyODictObject *)self, sub_key, key, value);
+
+exit:
+    return return_value;
+}
+
+PyDoc_STRVAR(OrderedDict_swap__doc__,
+"swap($self, /, sub_key, key)\n"
+"--\n"
+"\n"
+"Swap two keys.");
+
+#define ORDEREDDICT_SWAP_METHODDEF    \
+    {"swap", _PyCFunction_CAST(OrderedDict_swap), METH_FASTCALL|METH_KEYWORDS, OrderedDict_swap__doc__},
+
+static PyObject *
+OrderedDict_swap_impl(PyODictObject *self, PyObject *sub_key, PyObject *key);
+
+static PyObject *
+OrderedDict_swap(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
+{
+    PyObject *return_value = NULL;
+    #if defined(Py_BUILD_CORE) && !defined(Py_BUILD_CORE_MODULE)
+
+    #define NUM_KEYWORDS 2
+    static struct {
+        PyGC_Head _this_is_not_used;
+        PyObject_VAR_HEAD
+        Py_hash_t ob_hash;
+        PyObject *ob_item[NUM_KEYWORDS];
+    } _kwtuple = {
+        .ob_base = PyVarObject_HEAD_INIT(&PyTuple_Type, NUM_KEYWORDS)
+        .ob_hash = -1,
+        .ob_item = { &_Py_ID(sub_key), &_Py_ID(key), },
+    };
+    #undef NUM_KEYWORDS
+    #define KWTUPLE (&_kwtuple.ob_base.ob_base)
+
+    #else  // !Py_BUILD_CORE
+    #  define KWTUPLE NULL
+    #endif  // !Py_BUILD_CORE
+
+    static const char * const _keywords[] = {"sub_key", "key", NULL};
+    static _PyArg_Parser _parser = {
+        .keywords = _keywords,
+        .fname = "swap",
+        .kwtuple = KWTUPLE,
+    };
+    #undef KWTUPLE
+    PyObject *argsbuf[2];
+    PyObject *sub_key;
+    PyObject *key;
+
+    args = _PyArg_UnpackKeywords(args, nargs, NULL, kwnames, &_parser,
+            /*minpos*/ 2, /*maxpos*/ 2, /*minkw*/ 0, /*varpos*/ 0, argsbuf);
+    if (!args) {
+        goto exit;
+    }
+    sub_key = args[0];
+    key = args[1];
+    return_value = OrderedDict_swap_impl((PyODictObject *)self, sub_key, key);
+
+exit:
+    return return_value;
+}
+/*[clinic end generated code: output=a35382c2b0ac9603 input=a9049054013a1b77]*/
